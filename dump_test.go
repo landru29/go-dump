@@ -949,3 +949,21 @@ TT.DY: d
 `
 	assert.Equal(t, expected, out.String())
 }
+
+type TextMarshal string
+
+func (t TextMarshal) MarshallText() (string, error) {
+	return "'" + string(t) + "'", nil
+}
+
+func (t TextMarshal) Type() string {
+	return "MyType"
+}
+
+func TestImplementsInterface(t *testing.T) {
+	out := &bytes.Buffer{}
+
+	require.NoError(t, dump.NewEncoder(out).Fdump(TextMarshal("foo")))
+
+	assert.Equal(t, ": 'foo'\n", out.String())
+}
